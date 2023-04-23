@@ -4,6 +4,7 @@ import { router as tourRouter } from "./routes/tourRoutes.js";
 import { router as userRouter } from "./routes/userRoutes.js";
 
 const app = express();
+
 app.use(morgan("dev"));
 app.use(express.json());
 
