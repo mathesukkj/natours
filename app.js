@@ -1,12 +1,13 @@
 import express from "express";
 import { readFileSync, writeFile } from "fs";
+import morgan from "morgan";
 
 const app = express();
+app.use(morgan("dev"));
 app.use(express.json());
 
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
-    console.log("req time added");
     next();
 });
 
