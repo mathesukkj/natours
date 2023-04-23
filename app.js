@@ -104,11 +104,28 @@ const addNewUser = (req, res) => {
     });
 };
 
+const getUserById = (req, res) => {
+    const { id } = req.params;
+    const foundUser = users.find((item) => item._id == id);
+
+    if (!foundUser) {
+        return res.status(404).send({
+            message: "Invalid id",
+        });
+    }
+
+    res.status(200).send({
+        user: foundUser,
+    });
+};
+
 app.route("/api/v1/tours").get(getAllTours).post(addNewTour);
 
 app.route("/api/v1/tours/:id").get(getTourById).patch(updateTour).delete(deleteTour);
 
 app.route("/api/v1/users").get(getAllUsers).post(addNewUser);
+
+app.route("/api/v1/users/:id").get(getUserById);
 
 app.listen(8000, () => {
     console.log("Listening on port 8000");
