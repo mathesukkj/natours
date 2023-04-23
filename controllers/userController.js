@@ -2,6 +2,16 @@ import { readFileSync, writeFile } from "fs";
 
 const users = JSON.parse(readFileSync("./dev-data/data/users.json"));
 
+export const checkId = (req, res, next, val) => {
+    const foundUser = users.find((item) => item._id == val);
+    if (!foundUser) {
+        return res.status(404).send({
+            message: "Invalid id",
+        });
+    }
+    next();
+};
+
 export const getAllUsers = (req, res) => {
     res.status(200).send({
         users,
@@ -26,12 +36,6 @@ export const getUserById = (req, res) => {
     const { id } = req.params;
     const foundUser = users.find((item) => item._id == id);
 
-    if (!foundUser) {
-        return res.status(404).send({
-            message: "Invalid id",
-        });
-    }
-
     res.status(200).send({
         user: foundUser,
     });
@@ -40,12 +44,6 @@ export const getUserById = (req, res) => {
 export const updateUser = (req, res) => {
     const { id } = req.params;
     const foundUser = users.find((user) => user._id == id);
-
-    if (!foundUser) {
-        return res.status(404).send({
-            message: "Invalid id",
-        });
-    }
 
     const updatedUser = { ...foundUser, ...req.body };
     const updatedUsers = users.map((user) => (user._id == id ? updatedUser : user));
@@ -59,13 +57,6 @@ export const updateUser = (req, res) => {
 
 export const deleteUser = (req, res) => {
     const { id } = req.params;
-    const foundUser = users.find((user) => user._id == id);
-
-    if (!foundUser) {
-        return res.status(404).send({
-            message: "Invalid id",
-        });
-    }
 
     const updatedUsers = users.filter((user) => user._id != id);
 
