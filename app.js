@@ -4,6 +4,12 @@ import { readFileSync, writeFile } from "fs";
 const app = express();
 app.use(express.json());
 
+app.use((req, res, next) => {
+    req.requestTime = new Date().toISOString();
+    console.log("req time added");
+    next();
+});
+
 const tours = JSON.parse(readFileSync("./dev-data/data/tours-simple.json"));
 
 const getAllTours = (req, res) => {
