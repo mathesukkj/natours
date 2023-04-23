@@ -2,6 +2,16 @@ import { readFileSync, writeFile } from "fs";
 
 const tours = JSON.parse(readFileSync("./dev-data/data/tours-simple.json"));
 
+export const checkId = (req, res, next, val) => {
+    const foundTour = tours.find((item) => item.id == val);
+    if (!foundTour) {
+        return res.status(404).send({
+            message: "Invalid id",
+        });
+    }
+    next();
+};
+
 export const getAllTours = (req, res) => {
     res.status(200).send({
         tours,
@@ -24,12 +34,6 @@ export const getTourById = (req, res) => {
     const { id } = req.params;
     const foundTour = tours.find((item) => item.id == id);
 
-    if (!foundTour) {
-        return res.status(404).send({
-            message: "Invalid id",
-        });
-    }
-
     res.status(200).send({
         tour: foundTour,
     });
@@ -38,12 +42,6 @@ export const getTourById = (req, res) => {
 export const updateTour = (req, res) => {
     const { id } = req.params;
     const foundTour = tours.find((item) => item.id == id);
-
-    if (!foundTour) {
-        return res.status(404).send({
-            message: "Invalid id",
-        });
-    }
 
     const updatedTour = { ...foundTour, ...req.body };
     const updatedTours = tours.map((tour) => (tour.id == id ? updatedTour : tour));
@@ -57,13 +55,6 @@ export const updateTour = (req, res) => {
 
 export const deleteTour = (req, res) => {
     const { id } = req.params;
-    const foundTour = tours.find((item) => item.id == id);
-
-    if (!foundTour) {
-        return res.status(404).send({
-            message: "Invalid id",
-        });
-    }
 
     const updatedTours = tours.filter((tour) => tour.id != id);
 
