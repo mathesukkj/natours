@@ -12,6 +12,7 @@ app.use((req, res, next) => {
 });
 
 const tours = JSON.parse(readFileSync("./dev-data/data/tours-simple.json"));
+const users = JSON.parse(readFileSync("./dev-data/data/users.json"));
 
 const getAllTours = (req, res) => {
     res.status(200).send({
@@ -83,9 +84,17 @@ const deleteTour = (req, res) => {
     });
 };
 
+const getAllUsers = (req, res) => {
+    res.status(200).send({
+        users,
+    });
+};
+
 app.route("/api/v1/tours").get(getAllTours).post(addNewTour);
 
 app.route("/api/v1/tours/:id").get(getTourById).patch(updateTour).delete(deleteTour);
+
+app.route("/api/v1/users").get(getAllUsers);
 
 app.listen(8000, () => {
     console.log("Listening on port 8000");
