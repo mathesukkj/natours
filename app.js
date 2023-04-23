@@ -81,6 +81,28 @@ app.post("/api/v1/tours", (req, res) => {
     });
 });
 
+app.delete("/api/v1/tours/:id", (req, res) => {
+    const { id } = req.params;
+    const foundTour = tours.find((item) => item.id == id);
+
+    if (!foundTour) {
+        return res.status(404).send({
+            status: "failed",
+            message: "Invalid id",
+        });
+    }
+
+    const updatedTours = tours
+        .map((tour) => {
+            return tour.id == id ? null : tour;
+        })
+        .filter((tour) => tour != null);
+
+    writeFile("./dev-data/data/tours-simple.json", JSON.stringify(updatedTours), () => {
+        res.status(204).send();
+    });
+});
+
 app.listen(8000, () => {
     console.log("Listening on port 8000");
 });
