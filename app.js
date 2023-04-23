@@ -15,6 +15,4 @@ app.use((req, res, next) => {
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 
-app.listen(8000, () => {
-    console.log("Listening on port 8000");
-});
+export default app;
