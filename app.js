@@ -156,13 +156,18 @@ const deleteUser = (req, res) => {
     });
 };
 
-app.route("/api/v1/tours").get(getAllTours).post(addNewTour);
+const tourRouter = express.Router();
+const userRouter = express.Router();
+app.use("/api/v1/tours", tourRouter);
+app.use("/api/v1/users", userRouter);
 
-app.route("/api/v1/tours/:id").get(getTourById).patch(updateTour).delete(deleteTour);
+tourRouter.route("/").get(getAllTours).post(addNewTour);
 
-app.route("/api/v1/users").get(getAllUsers).post(addNewUser);
+tourRouter.route("/:id").get(getTourById).patch(updateTour).delete(deleteTour);
 
-app.route("/api/v1/users/:id").get(getUserById).patch(updateUser).delete(deleteUser);
+userRouter.route("/").get(getAllUsers).post(addNewUser);
+
+userRouter.route("/:id").get(getUserById).patch(updateUser).delete(deleteUser);
 
 app.listen(8000, () => {
     console.log("Listening on port 8000");
