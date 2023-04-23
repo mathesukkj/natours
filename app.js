@@ -25,14 +25,15 @@ app.get("/api/v1/tours", (req, res) => {
 
 app.get("/api/v1/tours/:id", (req, res) => {
     const { id } = req.params;
-    if (id > tours.length || id < 0 || isNaN(id)) {
+    const foundTour = tours.find((item) => item.id == id);
+
+    if (!foundTour) {
         return res.status(404).send({
             status: "failed",
             message: "Invalid id",
         });
     }
 
-    const foundTour = tours.find((item) => item.id == id);
     res.status(200).send({
         status: "success",
         data: {
@@ -43,14 +44,14 @@ app.get("/api/v1/tours/:id", (req, res) => {
 
 app.patch("/api/v1/tours/:id", (req, res) => {
     const { id } = req.params;
-    if (id > tours.length || id < 0 || isNaN(id)) {
+    const foundTour = tours.find((item) => item.id == id);
+
+    if (!foundTour) {
         return res.status(404).send({
             status: "failed",
             message: "Invalid id",
         });
     }
-
-    const foundTour = tours.find((item) => item.id == id);
 
     const updatedTour = { ...foundTour, ...req.body };
     const updatedTours = tours.map((tour) => (tour.id === updatedTour.id ? updatedTour : tour));
