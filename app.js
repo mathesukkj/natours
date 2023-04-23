@@ -90,11 +90,25 @@ const getAllUsers = (req, res) => {
     });
 };
 
+const addNewUser = (req, res) => {
+    const lastId = users[users.length - 1]._id.split("6fa");
+
+    const newId = lastId[0] + (+lastId[1] + 1);
+    const newUser = Object.assign({ _id: newId, active: true, role: "user" }, req.body);
+
+    users.push(newUser);
+    writeFile("./dev-data/data/users.json", JSON.stringify(users), () => {
+        res.status(201).send({
+            user: newUser,
+        });
+    });
+};
+
 app.route("/api/v1/tours").get(getAllTours).post(addNewTour);
 
 app.route("/api/v1/tours/:id").get(getTourById).patch(updateTour).delete(deleteTour);
 
-app.route("/api/v1/users").get(getAllUsers);
+app.route("/api/v1/users").get(getAllUsers).post(addNewUser);
 
 app.listen(8000, () => {
     console.log("Listening on port 8000");
