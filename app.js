@@ -139,13 +139,30 @@ const updateUser = (req, res) => {
     });
 };
 
+const deleteUser = (req, res) => {
+    const { id } = req.params;
+    const foundUser = users.find((user) => user._id == id);
+
+    if (!foundUser) {
+        return res.status(404).send({
+            message: "Invalid id",
+        });
+    }
+
+    const updatedUsers = users.filter((user) => user._id != id);
+
+    writeFile("./dev-data/data/users.json", JSON.stringify(updatedUsers), () => {
+        res.status(204).send();
+    });
+};
+
 app.route("/api/v1/tours").get(getAllTours).post(addNewTour);
 
 app.route("/api/v1/tours/:id").get(getTourById).patch(updateTour).delete(deleteTour);
 
 app.route("/api/v1/users").get(getAllUsers).post(addNewUser);
 
-app.route("/api/v1/users/:id").get(getUserById).patch(updateUser);
+app.route("/api/v1/users/:id").get(getUserById).patch(updateUser).delete(deleteUser);
 
 app.listen(8000, () => {
     console.log("Listening on port 8000");
