@@ -12,7 +12,7 @@ const tourSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, "A tour must have a name"],
-        unique: [true, "A tour with this name already exists"],
+        unique: true,
     },
     rating: {
         type: Number,
@@ -24,6 +24,19 @@ const tourSchema = new mongoose.Schema({
     },
 });
 const Tour = mongoose.model("Tour", tourSchema);
+
+const testTour = new Tour({
+    name: "The Park Camper",
+    price: 376,
+});
+testTour
+    .save()
+    .then((data) => {
+        console.log(data);
+    })
+    .catch((e) => {
+        console.log("error when saving to db: " + e);
+    });
 
 app.listen(process.env.PORT, () => {
     console.log("Listening on port 8000");
