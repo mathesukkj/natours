@@ -1,24 +1,23 @@
 import { Tour } from "../models/tourModel.js";
 
-export const checkBody = (req, res, next) => {
-    if (!req.body.name || !req.body.price) {
-        return res.status(400).send({
-            message: "Invalid body",
-        });
-    }
-    next();
-};
-
 export const getAllTours = (req, res) => {
     res.status(200).send({
         // tours,
     });
 };
 
-export const addNewTour = (req, res) => {
-    res.status(201).send({
-        // tour: newTour,
-    });
+export const addNewTour = async (req, res) => {
+    try {
+        const tour = await Tour.create(req.body);
+
+        res.status(201).send({
+            tour,
+        });
+    } catch (err) {
+        res.status(400).send({
+            message: err,
+        });
+    }
 };
 
 export const getTourById = (req, res) => {
