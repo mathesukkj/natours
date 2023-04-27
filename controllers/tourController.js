@@ -27,13 +27,18 @@ export const addNewTour = async (req, res) => {
     }
 };
 
-export const getTourById = (req, res) => {
-    const { id } = req.params;
-    // const foundTour = tours.find((item) => item.id == id);
-
-    res.status(200).send({
-        // tour: foundTour,
-    });
+export const getTourById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const tour = await Tour.findById(id);
+        res.status(200).send({
+            tour,
+        });
+    } catch (err) {
+        res.status(404).send({
+            message: err,
+        });
+    }
 };
 
 export const updateTour = (req, res) => {
