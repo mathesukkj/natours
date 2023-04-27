@@ -1,11 +1,16 @@
 import { Tour } from "../models/tourModel.js";
 
 export const getAllTours = async (req, res) => {
-    const tours = await Tour.find();
-
-    res.status(200).send({
-        tours,
-    });
+    try {
+        const tours = await Tour.find();
+        res.status(200).send({
+            tours,
+        });
+    } catch (err) {
+        res.status(404).send({
+            message: err,
+        });
+    }
 };
 
 export const addNewTour = async (req, res) => {
