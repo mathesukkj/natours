@@ -62,10 +62,14 @@ export const updateTour = async (req, res) => {
     }
 };
 
-export const deleteTour = (req, res) => {
-    const { id } = req.params;
-
-    // const updatedTours = tours.filter((tour) => tour.id != id);
-
-    res.status(204).send();
+export const deleteTour = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Tour.findByIdAndDelete(id);
+        res.status(204).send();
+    } catch (err) {
+        res.status(404).send({
+            message: err,
+        });
+    }
 };
