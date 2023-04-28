@@ -50,9 +50,15 @@ export const updateTour = async (req, res) => {
             tour,
         });
     } catch (err) {
-        res.status(404).send({
-            message: err,
-        });
+        if (err.kind == "ObjectId") {
+            res.status(404).send({
+                message: err,
+            });
+        } else {
+            res.status(400).send({
+                message: err,
+            });
+        }
     }
 };
 
