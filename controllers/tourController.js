@@ -41,16 +41,19 @@ export const getTourById = async (req, res) => {
     }
 };
 
-export const updateTour = (req, res) => {
-    const { id } = req.params;
-    // const foundTour = tours.find((item) => item.id == id);
+export const updateTour = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const tour = await Tour.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
 
-    // const updatedTour = { ...foundTour, ...req.body };
-    // const updatedTours = tours.map((tour) => (tour.id == id ? updatedTour : tour));
-
-    res.status(200).send({
-        // tour: updatedTour,
-    });
+        res.status(200).send({
+            tour,
+        });
+    } catch (err) {
+        res.status(404).send({
+            message: err,
+        });
+    }
 };
 
 export const deleteTour = (req, res) => {
