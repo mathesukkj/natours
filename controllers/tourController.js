@@ -4,11 +4,15 @@ export const getAllTours = async (req, res) => {
     try {
         const queryObj = { ...req.query };
         const fields = ["page", "sort", "limit", "fields"];
-        fields.forEach((item) => delete query[item]);
+        fields.forEach((item) => delete queryObj[item]);
 
-        const query = Tour.find(queryObj);
+        let queryStr = JSON.stringify(queryObj);
+        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (w) => "$" + w);
+
+        const query = Tour.find(JSON.parse(queryStr));
 
         const tours = await query;
+
         res.status(200).send({
             tours,
         });
