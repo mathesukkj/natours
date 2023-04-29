@@ -25,6 +25,19 @@ export const getAllTours = async (req, res) => {
             query = query.select("-__v");
         }
 
+        const page = +req.query.page || 1;
+        const limit = +req.query.limit || 9;
+        const skip = (page - 1) * limit;
+
+        query = query.skip(skip).limit(limit);
+
+        if (req.query.page) {
+            const qtyTours = await Tour.countDocuments();
+            if (skip >= qtyTours) {
+                throw "This page doesn't exist";
+            }
+        }
+
         const tours = await query;
 
         res.status(200).send({
