@@ -2,7 +2,13 @@ import { Tour } from "../models/tourModel.js";
 
 export const getAllTours = async (req, res) => {
     try {
-        const tours = await Tour.find();
+        const queryObj = { ...req.query };
+        const fields = ["page", "sort", "limit", "fields"];
+        fields.forEach((item) => delete query[item]);
+
+        const query = Tour.find(queryObj);
+
+        const tours = await query;
         res.status(200).send({
             tours,
         });
