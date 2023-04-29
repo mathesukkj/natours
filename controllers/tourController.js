@@ -1,73 +1,75 @@
-import { readFileSync, writeFile } from "fs";
+import { Tour } from "../models/tourModel.js";
 
-const tours = JSON.parse(readFileSync("./dev-data/data/tours-simple.json"));
-
-export const checkId = (req, res, next, val) => {
-    const foundTour = tours.find((item) => item.id == val);
-    if (!foundTour) {
-        return res.status(404).send({
-            message: "Invalid id",
-        });
-    }
-    next();
-};
-
-export const checkBody = (req, res, next) => {
-    if (!req.body.name || !req.body.price) {
-        return res.status(400).send({
-            message: "Invalid body",
-        });
-    }
-    next();
-};
-
-export const getAllTours = (req, res) => {
-    res.status(200).send({
-        tours,
-    });
-};
-
-export const addNewTour = (req, res) => {
-    const newId = tours[tours.length - 1].id + 1;
-    const newTour = Object.assign({ id: newId }, req.body);
-
-    tours.push(newTour);
-    writeFile("./dev-data/data/tours-simple.json", JSON.stringify(tours), () => {
-        res.status(201).send({
-            tour: newTour,
-        });
-    });
-};
-
-export const getTourById = (req, res) => {
-    const { id } = req.params;
-    const foundTour = tours.find((item) => item.id == id);
-
-    res.status(200).send({
-        tour: foundTour,
-    });
-};
-
-export const updateTour = (req, res) => {
-    const { id } = req.params;
-    const foundTour = tours.find((item) => item.id == id);
-
-    const updatedTour = { ...foundTour, ...req.body };
-    const updatedTours = tours.map((tour) => (tour.id == id ? updatedTour : tour));
-
-    writeFile("./dev-data/data/tours-simple.json", JSON.stringify(updatedTours), () => {
+export const getAllTours = async (req, res) => {
+    try {
+        const tours = await Tour.find();
         res.status(200).send({
-            tour: updatedTour,
+            tours,
         });
-    });
+    } catch (err) {
+        res.status(404).send({
+            message: err,
+        });
+    }
 };
 
-export const deleteTour = (req, res) => {
-    const { id } = req.params;
+export const addNewTour = async (req, res) => {
+    try {
+        const tour = await Tour.create(req.body);
 
-    const updatedTours = tours.filter((tour) => tour.id != id);
+        res.status(201).send({
+            tour,
+        });
+    } catch (err) {
+        res.status(400).send({
+            message: err,
+        });
+    }
+};
 
-    writeFile("./dev-data/data/tours-simple.json", JSON.stringify(updatedTours), () => {
+export const getTourById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const tour = await Tour.findById(id);
+        res.status(200).send({
+            tour,
+        });
+    } catch (err) {
+        res.status(404).send({
+            message: err,
+        });
+    }
+};
+
+export const updateTour = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const tour = await Tour.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+
+        res.status(200).send({
+            tour,
+        });
+    } catch (err) {
+        if (err.kind == "ObjectId") {
+            res.status(404).send({
+                message: err,
+            });
+        } else {
+            res.status(400).send({
+                message: err,
+            });
+        }
+    }
+};
+
+export const deleteTour = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Tour.findByIdAndDelete(id);
         res.status(204).send();
-    });
+    } catch (err) {
+        res.status(404).send({
+            message: err,
+        });
+    }
 };
