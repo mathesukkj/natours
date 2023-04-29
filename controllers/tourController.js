@@ -1,5 +1,12 @@
 import { Tour } from "../models/tourModel.js";
 
+export const aliasBestTours = async (req, res, next) => {
+    req.query.limit = "5";
+    req.query.sort = "iratingsAverage,price";
+    req.query.fields = "name,price,ratingsAverage,summary,difficulty,duration";
+    next();
+};
+
 export const getAllTours = async (req, res) => {
     try {
         const queryObj = { ...req.query };
