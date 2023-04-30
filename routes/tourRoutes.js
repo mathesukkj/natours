@@ -7,6 +7,7 @@ import {
     deleteTour,
     aliasBestTours,
     getTourStats,
+    getMonthlyPlan,
 } from "../controllers/tourController.js";
 
 export const router = express.Router();
@@ -14,6 +15,8 @@ export const router = express.Router();
 router.route("/").get(getAllTours).post(addNewTour);
 
 router.route("/stats").get(getTourStats);
+
+router.route("/monthly-plan/:year").get(getMonthlyPlan);
 
 router.route("/best-cheap").get(aliasBestTours, getAllTours);
 
