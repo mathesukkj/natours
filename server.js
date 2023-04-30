@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-config({ path: `./config.env` });
+config({ path: `.\\config.env` });
 import app from "./app.js";
 import mongoose from "mongoose";
 
