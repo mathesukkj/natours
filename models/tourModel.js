@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import slugify from "slugify";
 
 const tourSchema = new mongoose.Schema(
     {
@@ -51,6 +52,7 @@ const tourSchema = new mongoose.Schema(
             default: Date.now(),
         },
         startDates: [Date],
+        slug: String,
     },
     {
         toJSON: { virtuals: true },
@@ -61,5 +63,17 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual("durationWeeks").get(function () {
     return this.duration / 7;
 });
+
+// "this" no pre-middleware pega o documento que vai ser atualizado/salvo
+tourSchema.pre("save", function (next) {
+    this.slug = slugify(this.name, { lower: true });
+    next();
+});
+
+// "this" não existe no post, mas o doc funciona como ele
+// tourSchema.post("save", function (doc, next) {
+//     console.log(doc);
+//     next();
+// });
 
 export const Tour = mongoose.model("Tour", tourSchema);
