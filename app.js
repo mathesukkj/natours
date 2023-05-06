@@ -19,10 +19,23 @@ app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 
 app.all("*", (req, res, next) => {
-    res.status(404).send({
+    /* res.status(404).send({
         message: `Route ${req.url} not found!`,
     });
-    next();
+    next(); */
+
+    const err = new Error(`Route ${req.url} not found!`);
+    err.statusCode = 404;
+
+    next(err);
+});
+
+app.use((err, req, res, next) => {
+    err.statusCode = err.statusCode || 500;
+
+    res.status(err.statusCode).send({
+        message: err.message,
+    });
 });
 
 export default app;
