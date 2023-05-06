@@ -18,4 +18,11 @@ app.use(express.static("public/"));
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 
+app.all("*", (req, res, next) => {
+    res.status(404).send({
+        message: `Route ${req.url} not found!`,
+    });
+    next();
+});
+
 export default app;
