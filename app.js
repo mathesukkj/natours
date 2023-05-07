@@ -3,6 +3,7 @@ import morgan from "morgan";
 import { router as tourRouter } from "./routes/tourRoutes.js";
 import { router as userRouter } from "./routes/userRoutes.js";
 import AppError from "./utils/appError.js";
+import globalErrorHandler from "./controllers/errorController.js";
 
 const app = express();
 
@@ -20,21 +21,10 @@ app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 
 app.all("*", (req, res, next) => {
-    /* res.status(404).send({
-        message: `Route ${req.url} not found!`,
-    });
-    next(); */
-
     const err = new AppError(`Route ${req.url} not found!`, 404);
     next(err);
 });
 
-app.use((err, req, res, next) => {
-    err.statusCode = err.statusCode || 500;
-
-    res.status(err.statusCode).send({
-        message: err.message,
-    });
-});
+app.use(globalErrorHandler);
 
 export default app;
