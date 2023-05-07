@@ -1,7 +1,14 @@
 import { config } from "dotenv";
-config({ path: `.\\config.env` });
 import app from "./app.js";
 import mongoose from "mongoose";
+
+process.on("uncaughtException", (err) => {
+    console.log("\x1b[91mUNCAUGHT EXCEPTION!!");
+    console.log(err.name, err.message);
+    process.exit(1);
+});
+
+config({ path: `.\\config.env` });
 
 const db = process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD);
 const mongooseSettings = { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false };
