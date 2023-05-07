@@ -1,6 +1,7 @@
 import { Tour } from "../models/tourModel.js";
 import catchAsync from "../utils/catchAsync.js";
 import { APIFeatures } from "./../utils/apiFeatures.js";
+import AppError from "./../utils/appError.js";
 
 export const aliasBestTours = async (req, res, next) => {
     req.query.limit = "5";
@@ -26,9 +27,14 @@ export const addNewTour = catchAsync(async (req, res, next) => {
     });
 });
 
-export const getTourById = catchAsync(async (req, res) => {
+export const getTourById = catchAsync(async (req, res, next) => {
     const { id } = req.params;
     const tour = await Tour.findById(id);
+
+    if (!tour) {
+        return next(new AppError("This id doesn't exist!", 404));
+    }
+
     res.status(200).send({
         tour,
     });
@@ -38,6 +44,10 @@ export const updateTour = catchAsync(async (req, res) => {
     const { id } = req.params;
     const tour = await Tour.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
 
+    if (!tour) {
+        return next(new AppError("This id doesn't exist!", 404));
+    }
+
     res.status(200).send({
         tour,
     });
@@ -45,7 +55,12 @@ export const updateTour = catchAsync(async (req, res) => {
 
 export const deleteTour = catchAsync(async (req, res) => {
     const { id } = req.params;
-    await Tour.findByIdAndDelete(id);
+    const tour = await Tour.findByIdAndDelete(id);
+
+    if (!tour) {
+        return next(new AppError("This id doesn't exist!", 404));
+    }
+
     res.status(204).send();
 });
 
