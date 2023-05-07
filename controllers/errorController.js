@@ -10,6 +10,12 @@ const handleDuplicateFields = (err) => {
     return new AppError(msg, 400);
 };
 
+const handleValidationError = (err) => {
+    const errors = Object.values(err.errors).map((item) => item.message);
+    const msg = `Invalid input data: ${errors.join(". ")}`;
+    return new AppError(msg, 400);
+};
+
 const sendErrorDev = (err, res) => {
     // if error happened in dev, show every info possible
     res.status(err.statusCode).send({
@@ -39,9 +45,10 @@ export default (err, req, res, next) => {
     if (process.env.NODE_ENV === "development") {
         sendErrorDev(err, res);
     } else {
-        let error = { ...err };
+        let error = { ...err, isOperational: true };
         if (error.kind == "ObjectId") error = handleCastError(error);
         if (error.code === 11000) error = handleDuplicateFields(error);
+        if (error._message === "Validation failed") error = handleValidationError(error);
         sendErrorProd(error, res);
     }
 };
