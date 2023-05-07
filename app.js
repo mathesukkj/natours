@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import { router as tourRouter } from "./routes/tourRoutes.js";
 import { router as userRouter } from "./routes/userRoutes.js";
+import AppError from "./utils/appError.js";
 
 const app = express();
 
@@ -24,9 +25,7 @@ app.all("*", (req, res, next) => {
     });
     next(); */
 
-    const err = new Error(`Route ${req.url} not found!`);
-    err.statusCode = 404;
-
+    const err = new AppError(`Route ${req.url} not found!`, 404);
     next(err);
 });
 
