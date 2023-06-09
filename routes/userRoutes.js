@@ -8,8 +8,11 @@ import {
     checkId,
     checkBody,
 } from "../controllers/userController.js";
+import { signUp } from "../controllers/authController.js";
 
 export const router = express.Router();
+
+router.post("/signup", signUp);
 
 router.param("id", checkId);
 

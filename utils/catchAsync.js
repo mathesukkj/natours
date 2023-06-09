@@ -2,6 +2,7 @@ const catchAsync = (func) => {
     return (req, res, next) => {
         func(req, res, next).catch(next);
     };
-    // retorna func com um catch injetado, e passa o erro pro express
+    // recebe a função como parametro
+    // e retorna essa mesma função, com um .catch injetado
 };
 export default catchAsync;
