@@ -8,7 +8,7 @@ process.on("uncaughtException", (err) => {
     process.exit(1);
 });
 
-config({ path: `.\\config.env` });
+config({ path: ".\\config.env" });
 
 const db = process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD);
 const mongooseSettings = { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false };
