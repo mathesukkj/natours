@@ -8,8 +8,6 @@ export const getAllUsers = async (req, res) => {
     });
 };
 
-export const addNewUser = (req, res) => {};
-
 export const getUserById = (req, res) => {};
 
 export const updateUser = (req, res) => {};
