@@ -7,7 +7,7 @@ export const router = express.Router();
 router.post("/signup", signUp);
 router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
-router.post("/reset-password", resetPassword);
+router.patch("/reset-password/:token", resetPassword);
 
 router.route("/").get(getAllUsers);
 

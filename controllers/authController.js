@@ -1,8 +1,10 @@
 import { User } from "../models/userModel.js";
+import crypto from "crypto";
 import catchAsync from "./../utils/catchAsync.js";
 import jwt from "jsonwebtoken";
 import AppError from "./../utils/appError.js";
 import { promisify } from "util";
+import sendEmail from "../utils/sendEmail.js";
 
 const getToken = (id) => {
     const { JWT_SECRET: secret, JWT_EXPIRES_IN: expiresIn } = process.env;
@@ -79,9 +81,49 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
 
-    res.status(200).send({
-        resetToken,
-    });
+    const resetURL = `http://${req.get("host")}/api/v1/users/reset-password/${resetToken}`;
+
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: "Your password reset token (valid for only 10 minutes)",
+            message: `Submit a PATCH request to this ${resetURL} containing your new password + passwordConfirm!`,
+        });
+
+        res.status(200).send({
+            message: "Email sent!",
+        });
+    } catch (err) {
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        await user.save({ validateBeforeSave: false });
+
+        throw new AppError("Unknown error while sending the email. Sorry!", 500);
+    }
 });
 
-export const resetPassword = async (req, res, next) => {};
+export const resetPassword = catchAsync(async (req, res, next) => {
+    const { token } = req.params;
+    const { password, passwordConfirm } = req.body;
+
+    const hashedToken = crypto.createHash("sha512").update(token).digest("hex");
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+        throw new AppError("Invalid/Expired token!", 400);
+    }
+
+    user.password = password;
+    user.passwordConfirm = passwordConfirm;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+
+    const newToken = getToken(user._id);
+    res.status(200).send({
+        newToken,
+    });
+});
