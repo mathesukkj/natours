@@ -9,10 +9,11 @@ import {
     getTourStats,
     getMonthlyPlan,
 } from "../controllers/tourController.js";
+import { isAuthenticated } from "../controllers/authController.js";
 
 export const router = express.Router();
 
-router.route("/").get(getAllTours).post(addNewTour);
+router.route("/").get(isAuthenticated, getAllTours).post(addNewTour);
 
 router.route("/stats").get(getTourStats);
 
