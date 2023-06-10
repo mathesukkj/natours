@@ -57,5 +57,15 @@ export const isAuthenticated = catchAsync(async (req, res, next) => {
         throw new AppError("Password changed recently. Please login again", 401);
     }
 
+    req.user = user;
     next();
 });
+
+export const restrictTo = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.role)) {
+            throw new AppError("You do not have the sufficient permissions to do this.", 403);
+        }
+        next();
+    };
+};
