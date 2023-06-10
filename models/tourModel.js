@@ -104,14 +104,10 @@ tourSchema.pre("save", function (next) {
 // });
 
 // this aqui retorna a query
+
 tourSchema.pre(/^find/, function (next) {
     this.find({ isSecret: { $ne: true } });
     this.start = Date.now();
-    next();
-});
-
-tourSchema.post(/^find/, function (docs, next) {
-    console.log(Date.now() - this.start);
     next();
 });
 

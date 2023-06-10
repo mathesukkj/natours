@@ -16,6 +16,10 @@ const handleValidationError = (err) => {
     return new AppError(msg, 400);
 };
 
+const handleJWTError = () => new AppError("Wrong token. Please login again.", 401);
+
+const handleJWTExpiredError = () => new AppError("Token expired. Please login again.", 401);
+
 const sendErrorDev = (err, res) => {
     // if error happened in dev, show every info possible
     res.status(err.statusCode).send({
@@ -49,6 +53,10 @@ export default (err, req, res, next) => {
         if (error.kind == "ObjectId") error = handleCastError(error);
         if (error.code === 11000) error = handleDuplicateFields(error);
         if (error._message === "Validation failed") error = handleValidationError(error);
+        if (error.name === "JsonWebTokenError") error = handleJWTError();
+        if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
         sendErrorProd(error, res);
     }
 };
+// did all this cuz theres some external errors,
+// and here i can make them more user friendly
