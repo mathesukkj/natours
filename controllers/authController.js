@@ -6,6 +6,14 @@ import AppError from "./../utils/appError.js";
 import { promisify } from "util";
 import sendEmail from "../utils/sendEmail.js";
 
+const sendToken = (user, statusCode, res) => {
+    const token = getToken(user._id);
+
+    const response = statusCode == 201 ? { token, data: user } : { token };
+
+    res.status(statusCode).send(response);
+};
+
 const getToken = (id) => {
     const { JWT_SECRET: secret, JWT_EXPIRES_IN: expiresIn } = process.env;
 
@@ -16,9 +24,7 @@ export const signUp = catchAsync(async (req, res, next) => {
     const { name, email, password, passwordConfirm } = req.body;
     const newUser = await User.create({ name, email, password, passwordConfirm });
 
-    const token = getToken(newUser._id);
-
-    res.status(201).send({ token, data: newUser });
+    sendToken(newUser, 201, res);
 });
 
 export const login = catchAsync(async (req, res, next) => {
@@ -34,10 +40,7 @@ export const login = catchAsync(async (req, res, next) => {
         throw new AppError("Wrong email or password", 401);
     }
 
-    const token = getToken(user._id);
-    res.status(200).send({
-        token,
-    });
+    sendToken(user, 200, res);
 });
 
 export const isAuthenticated = catchAsync(async (req, res, next) => {
@@ -122,8 +125,21 @@ export const resetPassword = catchAsync(async (req, res, next) => {
     user.passwordResetExpires = undefined;
     await user.save();
 
-    const newToken = getToken(user._id);
-    res.status(200).send({
-        newToken,
-    });
+    sendToken(user, 200, res);
+});
+
+export const updatePassword = catchAsync(async (req, res, next) => {
+    const user = await User.findById(req.user.id).select("+password");
+    const { password, newPassword } = req.body;
+
+    const isPasswordValid = await user.checkPassword(password, user.password);
+    if (!isPasswordValid) {
+        throw new AppError("Wrong password!", 401);
+    }
+
+    user.password = newPassword;
+    user.passwordConfirm = newPassword;
+    await user.save();
+
+    sendToken(user, 200, res);
 });
