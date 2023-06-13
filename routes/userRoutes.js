@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllUsers, getUserById, updateUser, deleteUser } from "../controllers/userController.js";
+import { getAllUsers, getUserById, updateCurrentUser } from "../controllers/userController.js";
 import {
     forgotPassword,
     isAuthenticated,
@@ -16,7 +16,8 @@ router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
 router.patch("/reset-password/:token", resetPassword);
 router.patch("/update-password", isAuthenticated, updatePassword);
+router.patch("/update-data", isAuthenticated, updateCurrentUser);
 
 router.route("/").get(getAllUsers);
 
-router.route("/:id").get(getUserById).patch(updateUser).delete(deleteUser);
+router.route("/:id").get(getUserById);
