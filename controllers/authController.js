@@ -36,6 +36,11 @@ export const login = catchAsync(async (req, res, next) => {
     const user = await User.findOne({ email }).select("+password");
     const isPasswordValid = user && (await user.checkPassword(password, user.password));
 
+    if (!user.active) {
+        user.active = true;
+        await user.save({ validateBeforeSave: false });
+    }
+
     if (!isPasswordValid) {
         throw new AppError("Wrong email or password", 401);
     }

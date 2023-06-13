@@ -1,5 +1,10 @@
 import express from "express";
-import { getAllUsers, getUserById, updateCurrentUser } from "../controllers/userController.js";
+import {
+    deactivateUser,
+    getAllUsers,
+    getUserById,
+    updateCurrentUser,
+} from "../controllers/userController.js";
 import {
     forgotPassword,
     isAuthenticated,
@@ -17,6 +22,7 @@ router.post("/forgot-password", forgotPassword);
 router.patch("/reset-password/:token", resetPassword);
 router.patch("/update-password", isAuthenticated, updatePassword);
 router.patch("/update-data", isAuthenticated, updateCurrentUser);
+router.delete("/deactivate-account", isAuthenticated, deactivateUser);
 
 router.route("/").get(getAllUsers);
 

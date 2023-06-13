@@ -33,4 +33,7 @@ export const updateCurrentUser = catchAsync(async (req, res) => {
 
 export const getUserById = (req, res) => {};
 
-export const deleteUser = (req, res) => {};
+export const deactivateUser = catchAsync(async (req, res) => {
+    await User.findByIdAndUpdate(req.user.id, { active: false });
+    res.status(204).send({});
+});
