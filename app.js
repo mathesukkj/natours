@@ -6,20 +6,11 @@ import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/errorController.js";
 import { rateLimit } from "express-rate-limit";
 import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
 
 const app = express();
 
 app.use(helmet());
-
-app.use(morgan("dev"));
-app.use(express.json({ limit: "10kb" }));
-
-app.use((req, res, next) => {
-    req.time = new Date().toISOString();
-    next();
-});
-
-app.use(express.static("public/"));
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -28,6 +19,19 @@ const limiter = rateLimit({
     legacyHeaders: false,
 });
 app.use("/api", limiter);
+
+app.use(morgan("dev"));
+
+app.use(express.json({ limit: "10kb" }));
+
+app.use(mongoSanitize());
+
+app.use((req, res, next) => {
+    req.time = new Date().toISOString();
+    next();
+});
+
+app.use(express.static("public/"));
 
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
