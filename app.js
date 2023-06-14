@@ -27,7 +27,11 @@ app.use(express.json({ limit: "10kb" }));
 
 app.use(mongoSanitize());
 
-app.use(hpp());
+app.use(
+    hpp({
+        whitelist: ["duration", "difficulty", "price", "ratingsQuantity", "ratingsAverage"],
+    })
+);
 
 app.use((req, res, next) => {
     req.time = new Date().toISOString();
