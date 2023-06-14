@@ -5,11 +5,14 @@ import { router as userRouter } from "./routes/userRoutes.js";
 import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/errorController.js";
 import { rateLimit } from "express-rate-limit";
+import helmet from "helmet";
 
 const app = express();
 
+app.use(helmet());
+
 app.use(morgan("dev"));
-app.use(express.json());
+app.use(express.json({ limit: "10kb" }));
 
 app.use((req, res, next) => {
     req.time = new Date().toISOString();
