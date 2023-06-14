@@ -7,6 +7,7 @@ import globalErrorHandler from "./controllers/errorController.js";
 import { rateLimit } from "express-rate-limit";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
+import hpp from "hpp";
 
 const app = express();
 
@@ -25,6 +26,8 @@ app.use(morgan("dev"));
 app.use(express.json({ limit: "10kb" }));
 
 app.use(mongoSanitize());
+
+app.use(hpp());
 
 app.use((req, res, next) => {
     req.time = new Date().toISOString();
