@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import slugify from "slugify";
+import { User } from "./userModel.js";
 
 const tourSchema = new mongoose.Schema(
     {
@@ -80,6 +81,30 @@ const tourSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        startLocation: {
+            type: {
+                type: String,
+                default: "Point",
+                enum: ["Point"],
+            },
+            coordinates: [Number],
+            address: String,
+            description: String,
+        },
+        locations: [
+            {
+                type: {
+                    type: String,
+                    enum: ["Point"],
+                    default: "Point",
+                },
+                coordinates: [Number],
+                address: String,
+                description: String,
+                day: Number,
+            },
+        ],
+        guides: Array,
     },
     {
         toJSON: { virtuals: true },
@@ -94,6 +119,18 @@ tourSchema.virtual("durationWeeks").get(function () {
 // "this" no pre-middleware pega o documento que vai ser atualizado/salvo
 tourSchema.pre("save", function (next) {
     this.slug = slugify(this.name, { lower: true });
+    next();
+});
+
+tourSchema.pre("save", async function (next) {
+    const guides = await Promise.all(
+        this.guides.map(async (id) => {
+            return await User.findById(id);
+        })
+    );
+
+    this.guides = guides;
+
     next();
 });
 
